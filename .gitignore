@@ -1,0 +1,11 @@
+node_modules/
+opk.env
+npm-debug.log*
+
+# Local credentials and machine-specific configuration
+.env
+.env.*
+!.env.example
+*.env
+compose.override.yaml
+.DS_Store

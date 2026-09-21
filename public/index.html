@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My profile</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">MY ACCOUNT</p>
+    <h1> Welcome to my Docker app.</h1>
+    <p class="intro">Keep your profile up to date.</p>
+    <form id="profile-form">
+      <fieldset id="profile-fields" disabled>
+        <label for="name">Full name</label>
+        <input id="name" name="name" autocomplete="name" maxlength="100" placeholder="Your name" required>
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
+        <label for="interests">Interests <span>(optional)</span></label>
+        <textarea id="interests" name="interests" rows="3" maxlength="500" placeholder="What do you enjoy doing?"></textarea>
+        <button id="save" type="submit">Save profile</button>
+      </fieldset>
+    </form>
+    <p id="status" role="status" aria-live="polite">Loading your profile…</p>
+    <button id="retry" type="button" hidden>Retry loading</button>
+    <footer>Local development demo · One shared profile</footer>
+  </main>
+</body>
+</html>

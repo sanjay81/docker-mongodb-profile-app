@@ -1,0 +1,20 @@
+:root { font-family: system-ui, sans-serif; color: #203c35; background: #f1f5f2; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; }
+main { width: 100%; max-width: 550px; padding: 40px; background: white; border: 1px solid #dce6df; border-radius: 20px; box-shadow: 0 16px 50px #203c350a; }
+.eyebrow { color: #557967; font-size: 12px; font-weight: 700; letter-spacing: 2px; }
+h1 { font-size: clamp(26px, 6vw, 34px); letter-spacing: -1px; margin: 12px 0; }
+.intro { color: #64776e; margin-bottom: 30px; }
+fieldset { padding: 0; margin: 0; border: 0; min-width: 0; }
+label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+label span { color: #718179; font-weight: 400; }
+input, textarea { width: 100%; font: inherit; color: inherit; padding: 12px 14px; border: 1px solid #bccdc2; border-radius: 8px; background: #fcfdfc; margin-bottom: 22px; }
+textarea { resize: vertical; }
+button { border: 0; border-radius: 8px; background: #246b4b; color: white; font: inherit; font-weight: 600; padding: 13px 20px; cursor: pointer; }
+#save { width: 100%; }
+button:disabled, fieldset:disabled button { opacity: .55; cursor: wait; }
+:focus-visible { outline: 3px solid #75b594; outline-offset: 3px; }
+#status { min-height: 22px; font-size: 14px; color: #246b4b; }
+#status.error { color: #a42d2d; }
+footer { border-top: 1px solid #e4ebe6; padding-top: 20px; margin-top: 24px; font-size: 12px; color: #718179; }
+@media (max-width: 480px) { main { padding: 24px; } }

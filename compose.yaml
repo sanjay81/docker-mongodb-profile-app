@@ -1,0 +1,61 @@
+services:
+  app:
+    build: .
+    image: "${APP_IMAGE:-profile-app:local}"
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      PORT: "3000"
+      # Both containers connect through the Compose service hostname mongodb.
+      MONGODB_URI: "${MONGO_EXPRESS_URI:?Set MONGO_EXPRESS_URI in .env}"
+      MONGODB_DB: "${MONGODB_DB:-user}"
+      MONGODB_COLLECTION: "${MONGODB_COLLECTION:-users}"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/profile').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 8s
+      retries: 5
+      start_period: 10s
+
+  mongodb:
+    image: mongo:8.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_ROOT_USERNAME:?Run node scripts/setup-env.cjs}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_ROOT_PASSWORD:?Run node scripts/setup-env.cjs}"
+    command: ["mongod", "--auth", "--bind_ip_all"]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  mongo-express:
+    image: mongo-express@sha256:1b23d7976f0210dbec74045c209e52fbb26d29b2e873d6c6fa3d3f0ae32c2a64
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: "${MONGO_EXPRESS_URI:?Set MONGO_EXPRESS_URI in .env}"
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_BASICAUTH: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: "${MONGO_EXPRESS_WEB_USERNAME:?Set web username in .env}"
+      ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_WEB_PASSWORD:?Set web password in .env}"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+# Compose creates project-specific volumes on each new machine.
+volumes:
+  mongo-data: {}
+  mongo-config: {}
