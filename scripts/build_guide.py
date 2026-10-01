@@ -198,7 +198,7 @@ step(doc, "Open a terminal in the project directory.")
 step(doc, "Build the app and start all services.")
 code(doc, "docker compose up -d --build\ndocker compose ps")
 step(doc, "Open the profile website on port 3000 and Mongo Express on port 8081.")
-para(doc, "Compose waits for MongoDB to become healthy before starting dependent services. The app health check calls GET /api/profile, which also confirms database access.")
+para(doc, "Compose waits for MongoDB to become healthy before starting dependent services. The app health check calls GET /api/ready, which confirms database read access. GET /api/health checks process liveness separately.")
 
 heading(doc, "5. Manual test checklist")
 bullet(doc, "Open http://localhost:3000 and confirm the profile form loads.")
@@ -228,12 +228,12 @@ add_table(doc, ["Goal", "Commands"], [
     ("Run published version", "docker compose pull app\ndocker compose up -d --no-build"),
     ("Rebuild only the app", "docker compose up -d --build app"),
 ], [3000, 6360])
-para(doc, "The public image is singhania8192/profile-app:1.0. A registry stores images; it does not run the website. A computer or hosting platform must still run the containers.")
+para(doc, "Build current source for the recovery endpoints. The historical singhania8192/profile-app:1.0 image has not been verified with the new readiness health check. A registry stores images; it does not run the website. A computer or hosting platform must still run the containers.")
 
 heading(doc, "8. Publishing a release")
 code(doc, "docker login\ndocker build -t singhania8192/profile-app:1.1 .\ndocker push singhania8192/profile-app:1.1")
 para(doc, "Use versioned tags so users can choose a stable release. Publishing a multi-platform image supports both Intel/AMD and Apple Silicon machines.")
-code(doc, "docker buildx create --name profile-multiplatform --driver docker-container --use\ndocker buildx build --platform linux/amd64,linux/arm64 \\\n+  -t singhania8192/profile-app:1.1 --push .")
+code(doc, "docker buildx create --name profile-multiplatform --driver docker-container --use\ndocker buildx build --platform linux/amd64,linux/arm64 \\\n  -t singhania8192/profile-app:1.1 --push .")
 
 heading(doc, "9. Common problems")
 add_table(doc, ["Symptom", "Cause and fix"], [
@@ -252,7 +252,13 @@ bullet(doc, "Publish the Docker image publicly for anonymous pulls.")
 bullet(doc, "Publish source separately so others can inspect, modify, and build it.")
 bullet(doc, "Choose a source-code license before inviting broad reuse; repository visibility alone is not a license.")
 
-heading(doc, "11. Recommended next exercise")
+heading(doc, "11. Failure and recovery lab")
+para(doc, "The separate lab uses port 3001 and its own volumes. It does not load the normal Compose override or use the existing database. Follow docs/recovery-lab.md for the full written walkthrough; no video is required.")
+code(doc, "docker compose -p profile-recovery-lab -f compose.lab.yaml up -d --build --wait\nnpm run lab:test")
+para(doc, "The test stops MongoDB, verifies Node and the webpage stay available, checks readiness and saves fail with HTTP 503, then starts MongoDB and measures recovery. It also replaces the database container and verifies the saved profile survives without restarting the app. See docs/recovery-results.md for observed results and docs/linkedin-post.md for the post draft.")
+para(doc, "Health checks detect failure; the operator restores MongoDB in this exercise. Previously stored data remains in a volume, but failed saves require a retry. Volumes provide persistence, not backups.")
+
+heading(doc, "12. Recommended next exercise")
 para(doc, "Extend the fixed demo profile into a complete CRUD application: create multiple profiles, list them, edit a selected profile, and delete with confirmation. Then release the change as image version 1.1. This connects Node.js and MongoDB development with the Docker release workflow.")
 
 OUT.parent.mkdir(parents=True, exist_ok=True)

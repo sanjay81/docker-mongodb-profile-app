@@ -53,3 +53,21 @@ form.addEventListener('submit', async event => {
 
 retry.addEventListener('click', loadProfile);
 loadProfile();
+
+// Poll sequentially so a slow request cannot overlap the next check.
+async function checkDatabase() {
+  const indicator = document.querySelector('#database-status');
+  try {
+    const response = await fetch('/api/ready', { signal: AbortSignal.timeout(4500) });
+    const data = await response.json();
+    const online = response.ok && data.database === 'online';
+    indicator.textContent = online ? '● Database online' : '● Database offline — retry your save after recovery';
+    indicator.classList.toggle('error', !online);
+  } catch {
+    indicator.textContent = '● Cannot reach the server — checking again…';
+    indicator.classList.add('error');
+  } finally {
+    setTimeout(checkDatabase, 2000);
+  }
+}
+checkDatabase();

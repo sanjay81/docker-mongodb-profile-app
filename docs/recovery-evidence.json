@@ -1,0 +1,13 @@
+{
+  "startedAt": "2026-09-21T11:07:35.253Z",
+  "checks": [
+    "Profile saved; invalid email and malformed JSON rejected; unknown API returns 404.",
+    "During outage: Node and webpage available (200); readiness, profile read, and save fail (503).",
+    "Docker health check marks the app unhealthy during the outage.",
+    "Original data survived; saving works again.",
+    "Database container replaced; volume data persisted; app process did not restart."
+  ],
+  "recoverySeconds": 0.98,
+  "result": "passed",
+  "finishedAt": "2026-09-21T11:07:47.844Z"
+}

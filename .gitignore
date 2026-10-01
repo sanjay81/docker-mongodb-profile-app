@@ -9,3 +9,4 @@ npm-debug.log*
 *.env
 compose.override.yaml
 .DS_Store
+lab-results/

@@ -2,6 +2,15 @@
 
 A learning app with an HTML/JavaScript frontend, a Node.js/Express API, MongoDB, and Mongo Express. Docker Compose runs all three services on one network. The app saves one shared profile.
 
+## Failure and recovery experiment
+
+Follow [the step-by-step recovery lab](docs/recovery-lab.md) to stop a separate test database, observe failed saves, measure recovery, and verify volume persistence. The lab uses port 3001 and separate volumes. Start it with `docker compose -p profile-recovery-lab -f compose.lab.yaml up -d --build --wait`, then run `npm run lab:test`.
+
+See the [verified results](docs/recovery-results.md), [Docker concepts explained](docs/docker-learning-notes.md), and [LinkedIn post draft](docs/linkedin-post.md). No video is needed to follow the experiment.
+
+The app now exposes `/api/health` (process alive) and `/api/ready` (database read succeeds). The frontend polls database readiness without overwriting your unsaved form values.
+
+
 ## 1. Get the source and create your configuration
 
 Download or clone this project and open a terminal in its folder. You need Docker Desktop (or Docker Engine with Compose). With Node.js 22 or newer installed, run:
@@ -40,12 +49,14 @@ Save a profile in the website, then select the database from `MONGODB_DB` and co
 
 Why: a new user should not need your Mac's volume names or your existing database users.
 
-## 3. Run the published image instead
+## 3. Run a compatible published image instead
 
-Set this in `.env`:
+Build from source for the current recovery features. The older `singhania8192/profile-app:1.0` tag is not verified with the new `/api/ready` health check. This GitHub update does not publish a new Docker Hub image.
+
+After publishing a current image (see below), set its tag in `.env`:
 
 ```dotenv
-APP_IMAGE=singhania8192/profile-app:1.0
+APP_IMAGE=YOUR_USERNAME/profile-app:1.1
 ```
 
 Then run:
@@ -55,7 +66,7 @@ docker compose pull app
 docker compose up -d --no-build
 ```
 
-The Docker Hub repository must be public for anonymous pulls. While it is private, sign in with `docker login` using an authorized account. A release built only for Apple Silicon might not run natively on an Intel/AMD machine; build from source or publish a multi-platform release.
+The Docker Hub repository must be public for anonymous pulls. For a private repository, sign in with `docker login` using an authorized account. A release built only for Apple Silicon might not run natively on an Intel/AMD machine; build from source or publish a multi-platform release.
 
 Why: people who only want to run the app can download a prepared image. People who want to edit it can build the source.
 
@@ -111,9 +122,13 @@ Create the builder once. On later releases, select it with `docker buildx use pr
 
 - `public/index.html`, `public/style.css`, and `public/app.js`: browser frontend.
 - `server.js`: serves the frontend and profile API.
+- `GET /api/health`: process liveness, independent of database access after startup.
+- `GET /api/ready`: readiness, verified by a database read.
 - `GET /api/profile`: reads the shared profile.
 - `PUT /api/profile`: validates and saves the profile with `_id: "demo-profile"`.
 - `compose.yaml`: portable services, health checks, networking, and volumes.
+- `compose.lab.yaml`: isolated failure/recovery lab on port 3001.
+- `scripts/recovery-lab.cjs`: repeatable assertions and measured recovery report.
 - `.env.example`: shareable configuration reference with placeholders.
 - `scripts/setup-env.cjs`: creates matching random credentials without overwriting existing settings.
 
