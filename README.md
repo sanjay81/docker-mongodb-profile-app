@@ -2,6 +2,22 @@
 
 A learning app with an HTML/JavaScript frontend, a Node.js/Express API, MongoDB, and Mongo Express. Docker Compose runs all three services on one network. The app saves one shared profile.
 
+## Portfolio focus
+
+This repository is primarily a **container and resilience learning lab**. It demonstrates:
+
+- Multi-container Docker Compose orchestration.
+- Service-to-service networking.
+- Persistent MongoDB volumes.
+- Liveness and readiness endpoints.
+- Health-check-aware startup.
+- Failure/recovery experiments against a separate test database.
+- Measured recovery behavior and persistence validation.
+- Portable environment configuration with generated credentials.
+- A path toward multi-platform image publishing.
+
+It is intentionally a learning project rather than a production-ready application; the value is in the container, networking, persistence, and recovery exercises.
+
 ## Failure and recovery experiment
 
 Follow [the step-by-step recovery lab](docs/recovery-lab.md) to stop a separate test database, observe failed saves, measure recovery, and verify volume persistence. The lab uses port 3001 and separate volumes. Start it with `docker compose -p profile-recovery-lab -f compose.lab.yaml up -d --build --wait`, then run `npm run lab:test`.
