@@ -1,5 +1,8 @@
 # MongoDB profile app
 
+[![Container Lab CI](https://github.com/sanjay81/docker-mongodb-profile-app/actions/workflows/ci.yml/badge.svg)](https://github.com/sanjay81/docker-mongodb-profile-app/actions/workflows/ci.yml)
+
+
 A learning app with an HTML/JavaScript frontend, a Node.js/Express API, MongoDB, and Mongo Express. Docker Compose runs all three services on one network. The app saves one shared profile.
 
 ## Portfolio focus
